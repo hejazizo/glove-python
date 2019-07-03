@@ -3,17 +3,19 @@
 import array
 import collections
 import io
+import numbers
+from pathlib import Path
+
+import numpy as np
+import scipy.sparse as sp
+
+from .glove_cython import fit_vectors, transform_paragraph
+
 try:
     # Python 2 compat
     import cPickle as pickle
 except ImportError:
     import pickle
-
-import numpy as np
-import scipy.sparse as sp
-import numbers
-
-from .glove_cython import fit_vectors, transform_paragraph
 
 
 def check_random_state(seed):
@@ -222,7 +224,7 @@ class Glove(object):
         """
         Serialize model to filename in word2vec .vec format.
         """
-        with open(filename, 'w') as savefile:
+        with Path(filename).open('w') as savefile:
             (rows, cols) = self.word_vectors.shape
             savefile.write(str(rows) + " " + str(cols) + "\n")
             if hasattr(self.dictionary, 'iteritems'):
