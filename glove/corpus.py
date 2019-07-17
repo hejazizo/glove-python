@@ -1,6 +1,7 @@
 # Cooccurrence matrix construction tools
 # for fitting the GloVe model.
 import numpy as np
+
 try:
     # Python 2 compat
     import cPickle as pickle
@@ -33,12 +34,14 @@ class Corpus(object):
 
     def _check_dict(self, dictionary):
 
-        if (np.max(list(dictionary.values())) != (len(dictionary) - 1)):
-            raise Exception('The largest id in the dictionary '
-                            'should be equal to its length minus one.')
+        if np.max(list(dictionary.values())) != (len(dictionary) - 1):
+            raise Exception(
+                "The largest id in the dictionary "
+                "should be equal to its length minus one."
+            )
 
         if np.min(list(dictionary.values())) != 0:
-            raise Exception('Dictionary ids should start at zero')
+            raise Exception("Dictionary ids should start at zero")
 
     def fit(self, corpus, window=10, ignore_missing=False):
         """
@@ -57,25 +60,29 @@ class Corpus(object):
                                If False, a KeyError is raised.
         """
 
-        self.matrix = construct_cooccurrence_matrix(corpus,
-                                                    self.dictionary,
-                                                    int(self.dictionary_supplied),
-                                                    int(window),
-                                                    int(ignore_missing))
+        self.matrix = construct_cooccurrence_matrix(
+            corpus,
+            self.dictionary,
+            int(self.dictionary_supplied),
+            int(window),
+            int(ignore_missing),
+        )
 
     def save(self, filename):
 
-        with open(filename, 'wb') as savefile:
-            pickle.dump((self.dictionary, self.matrix),
-                        savefile,
-                        protocol=pickle.HIGHEST_PROTOCOL)
+        with open(filename, "wb") as savefile:
+            pickle.dump(
+                (self.dictionary, self.matrix),
+                savefile,
+                protocol=pickle.HIGHEST_PROTOCOL,
+            )
 
     @classmethod
     def load(cls, filename):
 
         instance = cls()
 
-        with open(filename, 'rb') as savefile:
+        with open(filename, "rb") as savefile:
             instance.dictionary, instance.matrix = pickle.load(savefile)
 
         return instance

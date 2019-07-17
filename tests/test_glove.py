@@ -27,7 +27,7 @@ def _reproduce_input_matrix(glove_model):
 
 def test_stanford_loading():
 
-    model = Glove.load_stanford('tests/stanford_test.txt')
+    model = Glove.load_stanford("tests/stanford_test.txt")
 
     assert model.word_vectors is not None
     assert model.word_vectors.shape == (100, 25)
@@ -40,7 +40,7 @@ def test_stanford_loading():
         assert unichr(8230) in model.dictionary
     except NameError:
         # Pyton 3
-        assert '…' in model.dictionary
+        assert "…" in model.dictionary
 
 
 def test_fitting():
@@ -53,15 +53,11 @@ def test_fitting():
 
     corpus = Corpus()
 
-    corpus.fit(generate_training_corpus(num_sentences,
-                                        vocabulary_size=50,
-                                        seed=seed))
+    corpus.fit(generate_training_corpus(num_sentences, vocabulary_size=50, seed=seed))
 
     # Check that the performance is poor without fitting
     glove_model = Glove(no_components=100, learning_rate=0.05)
-    glove_model.fit(corpus.matrix,
-                    epochs=0,
-                    no_threads=2)
+    glove_model.fit(corpus.matrix, epochs=0, no_threads=2)
 
     log_cooc_mat = corpus.matrix.copy()
     log_cooc_mat.data = np.log(log_cooc_mat.data)
@@ -73,9 +69,7 @@ def test_fitting():
 
     # Check that it is good with fitting
     glove_model = Glove(no_components=100, learning_rate=0.05)
-    glove_model.fit(corpus.matrix,
-                    epochs=500,
-                    no_threads=2)
+    glove_model.fit(corpus.matrix, epochs=500, no_threads=2)
 
     repr_matrix = _reproduce_input_matrix(glove_model)
 

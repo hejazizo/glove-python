@@ -11,16 +11,16 @@ def read_analogy_file(filename):
     """
     Read the analogy task test set from a file.
     """
-    
+
     section = None
 
-    with open(filename, 'r') as questions_file:
+    with open(filename, "r") as questions_file:
         for line in questions_file:
-            if line.startswith(':'):
-                section = line[2:].replace('\n', '')
+            if line.startswith(":"):
+                section = line[2:].replace("\n", "")
                 continue
             else:
-                words = line.replace('\n', '').split(' ')
+                words = line.replace("\n", "").split(" ")
 
             yield section, words
 
@@ -42,7 +42,7 @@ def construct_analogy_test_set(test_examples, dictionary, ignore_missing=False):
     """
 
     test = []
-    
+
     for example in test_examples:
         try:
             test.append([dictionary[word] for word in example])
@@ -56,8 +56,9 @@ def construct_analogy_test_set(test_examples, dictionary, ignore_missing=False):
         test = np.array(test, dtype=np.int32)
     except ValueError as e:
         # This should use raise ... from ... in Python 3.
-        raise ValueError('Each row of the test set should contain '
-                        '4 integer word ids', e)
+        raise ValueError(
+            "Each row of the test set should contain " "4 integer word ids", e
+        )
 
     return test
 
@@ -84,22 +85,25 @@ def analogy_rank_score(analogies, word_vectors, no_threads=1):
     # The mean of the vectors for the
     # second, third, and the negative of
     # the first word.
-    input_vectors = (word_vectors[analogies[:, 1]]
-                     + word_vectors[analogies[:, 2]]
-                     - word_vectors[analogies[:, 0]])
+    input_vectors = (
+        word_vectors[analogies[:, 1]]
+        + word_vectors[analogies[:, 2]]
+        - word_vectors[analogies[:, 0]]
+    )
 
-    word_vector_norms = np.linalg.norm(word_vectors,
-                                       axis=1)
+    word_vector_norms = np.linalg.norm(word_vectors, axis=1)
 
     # Pre-allocate the array storing the rank violations
     rank_violations = np.zeros(input_vectors.shape[0], dtype=np.int32)
 
-    compute_rank_violations(word_vectors,
-                            word_vector_norms,
-                            input_vectors,
-                            analogies[:, 3],
-                            analogies,
-                            rank_violations,
-                            no_threads)
+    compute_rank_violations(
+        word_vectors,
+        word_vector_norms,
+        input_vectors,
+        analogies[:, 3],
+        analogies,
+        rank_violations,
+        no_threads,
+    )
 
     return rank_violations / float(word_vectors.shape[0])
